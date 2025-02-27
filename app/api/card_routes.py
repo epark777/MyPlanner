@@ -4,77 +4,108 @@ from app.models import Card, CardSection, db
 from app.forms import CardForm
 
 
-card_routes = Blueprint('cards', __name__)
+# Initialize Blueprint
+cards_blueprint = Blueprint("cards", __name__)
 
 
-@card_routes.route('<int:cardId>', methods=['PUT'])
+def verify_card_ownership(card_instance, user_id):
+    """Helper function to verify card ownership"""
+    if not card_instance:
+        return {"error": "Card not found", "status": 404}
+
+    if card_instance.to_dict_basic()["userId"] != user_id:
+        return {"error": "Forbidden - You do not own this card", "status": 403}
+
+    return None
+
+
+@cards_blueprint.route("<int:card_id>", methods=["PUT"])
 @login_required
-def edit_card(cardId):
-  """
-  Update a card based on its id when the user is logged in
-  """
-  card = Card.query.get(cardId)
-  if not card:
-    return {'message': 'Card couldn\'t be found'}, 404
-  
-  if card.to_dict_basic()['userId'] != current_user.id:
-    return {"message" : "Forbidden"}, 403
+def update_card(card_id):
+    """Update a card if the current user is the owner"""
+    # Find the card by ID
+    target_card = Card.query.get(card_id)
 
-  form = CardForm()
-  form['csrf_token'].data = request.cookies['csrf_token']
+    # Check if card exists and belongs to user
+    ownership_check = verify_card_ownership(target_card, current_user.id)
+    if ownership_check:
+        return ownership_check["error"], ownership_check["status"]
 
-  if form.validate_on_submit():
-    card.name = form.data['name']
-    card.description = form.data['description']
-    card.labels = form.data['labels']
-    card.due_date = form.data['due_date']
+    # Process the form data
+    card_form = CardForm()
+    card_form["csrf_token"].data = request.cookies["csrf_token"]
+
+    if card_form.validate_on_submit():
+        # Update card fields
+        form_data = card_form.data
+        target_card.name = form_data["name"]
+        target_card.description = form_data["description"]
+        target_card.labels = form_data["labels"]
+        target_card.due_date = form_data["due_date"]
+
+        # Save changes
+        db.session.commit()
+        return target_card.to_dict_basic()
+
+    # Form validation failed
+    return card_form.errors, 400
+
+
+@cards_blueprint.route("<int:card_id>", methods=["DELETE"])
+@login_required
+def remove_card(card_id):
+    """Remove a card if the current user is the owner"""
+    # Find the card by ID
+    target_card = Card.query.get(card_id)
+
+    # Check if card exists and belongs to user
+    ownership_check = verify_card_ownership(target_card, current_user.id)
+    if ownership_check:
+        return ownership_check["error"], ownership_check["status"]
+
+    # Delete the card
+    db.session.delete(target_card)
     db.session.commit()
-    return card.to_dict_basic()
-  
-  return form.errors, 400
+
+    return {"message": "Card successfully deleted"}
 
 
-@card_routes.route('<int:cardId>', methods=['DELETE'])
+@cards_blueprint.route("/reorder", methods=["PUT"])
 @login_required
-def delete_card(cardId):
-  """
-  Delete a card based on its id when the user is logged in
-  """
-  card = Card.query.get(cardId)
-  if not card:
-    return {"message": "Card couldn't be found"}
-  
-  if card.to_dict_basic()['userId'] != current_user.id:
-    return {"message" : "Forbidden"}, 403
-  
-  db.session.delete(card)
-  db.session.commit()
-  return {"message": "Successfully deleted"}
+def update_card_order():
+    """Update the order and section of multiple cards"""
+    # Get JSON data from request
+    request_data = request.get_json()
+    cards_to_reorder = request_data.get("reorderedCards", [])
 
+    # Validate data structure
+    if not isinstance(cards_to_reorder, list):
+        return {"error": "Data must be a list of cards"}, 400
 
-@card_routes.route('/reorder', methods=['PUT'])
-@login_required
-def reorder_card():
-  data = request.get_json()
-  reordered_cards = data['reorderedCards']
-  print(reordered_cards)
-  if not isinstance(reordered_cards, list):
-    return {"message" : "Invalid data format"}, 400
-  
-  for card in reordered_cards:
-    print(card)
-    if not all(key in card for key in ['id', 'order', 'cardSectionId']):
-      return {"message": f"Missing required fields in card data: {card}"}, 400
-    
-    if not isinstance(card['id'], int) or not isinstance(card['order'], int):
-      return {"message": f"Invalid data types in card: {card}"}, 400
-    
-    card_in_db = Card.query.get(card['id'])
-    print(card_in_db)
-    if card_in_db:
-      card_in_db.order = card['order']
-      card_in_db.card_section_id = card['cardSectionId']
-      db.session.add(card_in_db)
-  db.session.commit()
+    # Process each card in the reorder list
+    for card_data in cards_to_reorder:
+        # Validate required fields
+        required_fields = ["id", "order", "cardSectionId"]
+        if not all(field in card_data for field in required_fields):
+            return {
+                "error": f"Missing required fields in card: {card_data}",
+                "required_fields": required_fields,
+            }, 400
 
-  return jsonify(reordered_cards)
+        # Validate data types
+        if not isinstance(card_data["id"], int) or not isinstance(
+            card_data["order"], int
+        ):
+            return {"error": f"Invalid data types in card: {card_data}"}, 400
+
+        # Update card in database
+        db_card = Card.query.get(card_data["id"])
+        if db_card:
+            db_card.order = card_data["order"]
+            db_card.card_section_id = card_data["cardSectionId"]
+            db.session.add(db_card)
+
+    # Commit all changes at once
+    db.session.commit()
+
+    return jsonify(cards_to_reorder)
