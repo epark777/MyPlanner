@@ -4,7 +4,7 @@ from app.models import Board, CardSection, db
 from app.forms import BoardForm, CardSectionForm
 
 # Create a new blueprint with a different name
-board_controller = Blueprint("boards", __name__)
+board_api = Blueprint("boards", __name__)
 
 
 # Helper function to verify board ownership
@@ -33,7 +33,7 @@ def verify_board_access(board_id):
 
 
 # Board Management Routes
-@board_controller.route("/mine")
+@board_api.route("/mine")
 @login_required
 def list_user_boards():
     """Retrieve all boards belonging to the current user"""
@@ -49,7 +49,7 @@ def list_user_boards():
     return response
 
 
-@board_controller.route("/view/<int:board_id>")
+@board_api.route("/view/<int:board_id>")
 @login_required
 def retrieve_board_details(board_id):
     """Get complete details for a specific board"""
@@ -62,7 +62,7 @@ def retrieve_board_details(board_id):
     return board.to_dict_detail()
 
 
-@board_controller.route("/create", methods=["POST"])
+@board_api.route("/create", methods=["POST"])
 @login_required
 def establish_new_board():
     """Create a new board for the current user"""
@@ -88,7 +88,7 @@ def establish_new_board():
     }, 201
 
 
-@board_controller.route("/update/<int:board_id>", methods=["PUT"])
+@board_api.route("/update/<int:board_id>", methods=["PUT"])
 @login_required
 def modify_board(board_id):
     """Update an existing board's properties"""
@@ -111,7 +111,7 @@ def modify_board(board_id):
     return {"validation_errors": form.errors}, 400
 
 
-@board_controller.route("/delete/<int:board_id>", methods=["DELETE"])
+@board_api.route("/delete/<int:board_id>", methods=["DELETE"])
 @login_required
 def remove_board(board_id):
     """Remove a board and all associated data"""
@@ -129,7 +129,7 @@ def remove_board(board_id):
 
 
 # Section Management Routes
-@board_controller.route("/<int:board_id>/sections")
+@board_api.route("/<int:board_id>/sections")
 @login_required
 def list_board_sections(board_id):
     """List all sections in a board"""
@@ -146,7 +146,7 @@ def list_board_sections(board_id):
     }
 
 
-@board_controller.route("/<int:board_id>/sections/add", methods=["POST"])
+@board_api.route("/<int:board_id>/sections/add", methods=["POST"])
 @login_required
 def add_board_section(board_id):
     """Add a new section to a board"""

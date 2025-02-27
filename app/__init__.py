@@ -7,6 +7,10 @@ from flask_login import LoginManager
 from .models import db, User
 from .api.user_routes import user_routes
 from .api.auth_routes import auth_routes
+from .api.card_routes import cards_api
+from .api.card_section_routes import section_api
+from .api.favorite_routes import favorites_api
+from .api.board_routes import board_api
 from .seeds import seed_commands
 from .config import Config
 
@@ -28,6 +32,10 @@ app.cli.add_command(seed_commands)
 app.config.from_object(Config)
 app.register_blueprint(user_routes, url_prefix='/api/users')
 app.register_blueprint(auth_routes, url_prefix='/api/auth')
+app.register_blueprint(cards_api, url_prefix='/api/cards')
+app.register_blueprint(section_api, url_prefix='/api/card-sections')
+app.register_blueprint(favorites_api, url_prefix='/api/favorites')
+app.register_blueprint(board_api, url_prefix='/api/boards')
 db.init_app(app)
 Migrate(app, db)
 

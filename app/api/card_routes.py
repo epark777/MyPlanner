@@ -5,7 +5,7 @@ from app.forms import CardForm
 
 
 # Initialize Blueprint
-cards_blueprint = Blueprint("cards", __name__)
+cards_api = Blueprint("cards", __name__)
 
 
 def verify_card_ownership(card_instance, user_id):
@@ -19,7 +19,7 @@ def verify_card_ownership(card_instance, user_id):
     return None
 
 
-@cards_blueprint.route("<int:card_id>", methods=["PUT"])
+@cards_api.route("<int:card_id>", methods=["PUT"])
 @login_required
 def update_card(card_id):
     """Update a card if the current user is the owner"""
@@ -51,7 +51,7 @@ def update_card(card_id):
     return card_form.errors, 400
 
 
-@cards_blueprint.route("<int:card_id>", methods=["DELETE"])
+@cards_api.route("<int:card_id>", methods=["DELETE"])
 @login_required
 def remove_card(card_id):
     """Remove a card if the current user is the owner"""
@@ -70,7 +70,7 @@ def remove_card(card_id):
     return {"message": "Card successfully deleted"}
 
 
-@cards_blueprint.route("/reorder", methods=["PUT"])
+@cards_api.route("/reorder", methods=["PUT"])
 @login_required
 def update_card_order():
     """Update the order and section of multiple cards"""
