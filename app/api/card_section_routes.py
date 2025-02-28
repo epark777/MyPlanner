@@ -1,6 +1,6 @@
 from flask import Blueprint, request
 from flask_login import login_required, current_user
-from app.models import CardSection, Board, Card, db
+from app.models import CardSection, Card, db
 from app.forms import CardSectionForm, CardForm
 
 
