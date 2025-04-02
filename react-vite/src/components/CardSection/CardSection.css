@@ -1,0 +1,141 @@
+.card-section {
+   background-color: #f0f0f0;
+   border-radius: 8px;
+   width: 280px;
+   min-height: 100px;
+   padding: 15px;
+   display: flex;
+   flex-direction: column;
+   max-height: calc(100vh - 180px);
+}
+
+.section-header {
+   margin-bottom: 15px;
+}
+
+.section-title-container {
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+}
+
+.section-title-container h2 {
+   margin: 0;
+   font-size: 18px;
+   flex-grow: 1;
+   cursor: pointer;
+}
+
+.section-actions {
+   display: flex;
+   gap: 5px;
+}
+
+.delete-section-button {
+   background: none;
+   border: none;
+   cursor: pointer;
+   font-size: 18px;
+   color: #777;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   width: 24px;
+   height: 24px;
+   border-radius: 4px;
+}
+
+.delete-section-button:hover {
+   background-color: #e0e0e0;
+   color: #e53e3e;
+}
+
+.edit-title-form {
+   width: 100%;
+}
+
+.edit-title-form input {
+   width: 100%;
+   padding: 8px;
+   border: 1px solid #ccc;
+   border-radius: 4px;
+   font-size: 16px;
+}
+
+.cards-container {
+   overflow-y: auto;
+   flex-grow: 1;
+   margin-bottom: 15px;
+}
+
+.no-cards {
+   text-align: center;
+   color: #777;
+   font-size: 14px;
+   margin: 20px 0;
+}
+
+.add-card-button {
+   background-color: #e8e8e8;
+   border: none;
+   border-radius: 4px;
+   padding: 10px;
+   text-align: center;
+   cursor: pointer;
+   font-size: 14px;
+   color: #555;
+   width: 100%;
+   margin-top: auto;
+}
+
+.add-card-button:hover {
+   background-color: #d8d8d8;
+}
+
+.add-card-form {
+   margin-top: auto;
+}
+
+.add-card-form input {
+   width: 100%;
+   padding: 8px;
+   border: 1px solid #ccc;
+   border-radius: 4px;
+   margin-bottom: 10px;
+   font-size: 14px;
+}
+
+.form-buttons {
+   display: flex;
+   justify-content: flex-end;
+   gap: 10px;
+}
+
+.form-buttons button {
+   padding: 6px 12px;
+   border: none;
+   border-radius: 4px;
+   cursor: pointer;
+   font-size: 14px;
+}
+
+.form-buttons button:first-child {
+   background-color: #e2e8f0;
+}
+
+.form-buttons button:last-child {
+   background-color: #4299e1;
+   color: white;
+}
+
+.error {
+   color: #e53e3e;
+   margin: 5px 0;
+   font-size: 14px;
+}
+
+.section-error {
+   margin-top: auto;
+   margin-bottom: 10px;
+   text-align: center;
+}
