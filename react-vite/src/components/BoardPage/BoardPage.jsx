@@ -47,7 +47,7 @@ const BoardPage = () => {
    if (!board) {
       return (
          <div className="not-found">
-            Board not found or you don't have access to it.
+            Board not found or you do not have access to it.
          </div>
       );
    }
@@ -112,7 +112,7 @@ const BoardPage = () => {
                ))
             ) : (
                <div className="no-sections">
-                  <p>This board doesn't have any sections yet.</p>
+                  <p>This board does not have any sections yet.</p>
                </div>
             )}
 

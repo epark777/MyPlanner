@@ -6,7 +6,7 @@ import {
 } from "redux";
 import thunk from "redux-thunk";
 import sessionReducer from "./session";
-import boardsReducer from "./board";
+import boardsReducer from "./boards";
 import sectionsReducer from "./sections";
 import cardsReducer from "./cards";
 import favoritesReducer from "./favorites";
