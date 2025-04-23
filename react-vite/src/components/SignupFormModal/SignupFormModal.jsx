@@ -28,6 +28,7 @@ function SignupFormModal() {
         email,
         username,
         password,
+        confirm_password: confirmPassword
       })
     );
 

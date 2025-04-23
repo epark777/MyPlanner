@@ -1,18 +1,45 @@
-import { NavLink } from "react-router-dom";
-import ProfileButton from "./ProfileButton";
-import "./Navigation.css";
+import { NavLink } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import ProfileButton from './ProfileButton';
+import OpenModalButton from '../OpenModalButton';
+import CreateBoardModal from '../BoardModals/CreateBoardModal';
+import './Navigation.css';
 
-function Navigation() {
+function Navigation({ isLoaded }) {
+  const sessionUser = useSelector((state) => state.session.user);
+
   return (
-    <ul>
-      <li>
-        <NavLink to="/">Home</NavLink>
-      </li>
+    <div className="navbar">
+      <NavLink to="/" className="logo">
+        <span>MyPlanner</span>
+      </NavLink>
 
-      <li>
-        <ProfileButton />
-      </li>
-    </ul>
+      <div className="right-side">
+        {isLoaded ? (
+          sessionUser ? (
+            <>
+              <OpenModalButton
+                buttonText="Create Board"
+                modalComponent={<CreateBoardModal />}
+                className="create-board-button"
+              />
+              <ProfileButton user={sessionUser} />
+            </>
+          ) : (
+            <>
+              <NavLink to="/signup" className="signup-button">
+                Sign Up
+              </NavLink>
+              <NavLink to="/login" className="login-button">
+                Log In
+              </NavLink>
+            </>
+          )
+        ) : (
+          <ProfileButton className='nav-profile-icon' />
+        )}
+      </div>
+    </div>
   );
 }
 

@@ -5,6 +5,7 @@ import { fetchBoards } from '../../redux/boards';
 import { fetchFavorites } from '../../redux/favorites';
 import CreateBoardModal from '../BoardModals/CreateBoardModal';
 import OpenModalButton from '../OpenModalButton';
+import LoginFormPage from '../LoginFormPage'
 import './HomePage.css';
 
 const HomePage = () => {
@@ -17,36 +18,23 @@ const HomePage = () => {
 
    useEffect(() => {
       const loadData = async () => {
-         await Promise.all([
-            dispatch(fetchBoards()),
-            dispatch(fetchFavorites()),
-         ]);
-         setIsLoaded(true);
+        if (user) {
+          await dispatch(fetchBoards());
+          await dispatch(fetchFavorites());
+          setIsLoaded(true);
+        }
       };
-
-      if (user) {
-         loadData();
-      }
-   }, [dispatch, user]);
-
-   if (!user) {
-      return (
-         <div className="homepage">
-            <div className="homepage-hero">
-               <h1>Welcome to TaskBoard</h1>
-               <p>
-                  Organize your tasks, manage your projects, and boost your
-                  productivity.
-               </p>
-               <p>Please log in or sign up to get started.</p>
-            </div>
-         </div>
-      );
-   }
-
-   if (!isLoaded) {
-      return <div>Loading...</div>;
-   }
+      
+      loadData();
+    }, [dispatch, user]);
+    
+    if (!user) {
+      return <LoginFormPage />
+    }
+    
+    if (!isLoaded) {
+      return <div className="loading-container">Loading...</div>
+    }
 
    const boardsArray = Object.values(allBoards);
    const favoritesArray = Object.values(favorites);
@@ -82,7 +70,7 @@ const HomePage = () => {
             <h2>All Boards</h2>
             {boardsArray.length === 0 ? (
                <p>
-                  You don't have any boards yet. Create your first board to get
+                  You do not have any boards yet. Create your first board to get
                   started!
                </p>
             ) : (
